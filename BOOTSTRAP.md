@@ -32,11 +32,30 @@
 
 **Backend Actions (run IMMEDIATELY when user confirms):**
 
-1. **Install browser extension:**
+1. **Try the official install command first:**
    ```
    exec: openclaw browser extension install
    ```
-   This downloads the Chrome extension to `browser/chrome-extension` folder.
+
+2. **If Step 1 fails (error about "Bundled Chrome extension is missing"), run this fallback:**
+   ```powershell
+   $d="$env:USERPROFILE\.openclaw\browser\chrome-extension"
+   $i="$d\icons"
+   New-Item -ItemType Directory -Force -Path $i | Out-Null
+   $b="https://raw.githubusercontent.com/openclaw/openclaw/main/assets/chrome-extension"
+   @("manifest.json","background.js","options.html","options.js","README.md") | ForEach-Object { curl.exe -s -o "$d\$_" "$b/$_" }
+   @("icon16.png","icon32.png","icon48.png","icon128.png") | ForEach-Object { curl.exe -s -o "$i\$_" "$b/icons/$_" }
+   Write-Host "Chrome extension downloaded to: $d"
+   ```
+   
+   **Note:** If execution policy blocks this, run each line separately or prefix with:
+   ```
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   ```
+   
+   This downloads the extension files directly from GitHub to the correct location.
+
+**Result:** Extension ends up at `~\.openclaw\browser\chrome-extension` either way.
 
 ### Step 5: Telegram Token
 - Context: "I would love to connect with you via Telegram. This allows you to get away from the computer screen and chat with me from your mobile device just like you're doing now. This is also where you're able to send me audio files."
@@ -75,8 +94,34 @@
 
 ### Step 6: Agent Email
 - Context: "If you've set up an agent email for me, I'll be able to manage a lot of things for you. Instructions on setting up this special email are available in the members area."
-- Ask: "Can you tell me what my new email address is?"
-- Confirm: "Congrats! We've now set up my email. We'll be using it in the very near future."
+- Ask: "Do you have your AgentMail API key? If so, please paste it here."
+- User provides API key
+- Ask: "Great! And what's the email address for my inbox? (e.g., example@agentmail.to)"
+- User provides email address
+- Confirm: "Congrats! We've now set up my email. I can now send and receive emails on your behalf. We'll be using it in the very near future."
+
+**Backend Actions (run after receiving API key and email):**
+
+1. **Configure AgentMail skill:**
+   Use `gateway` tool with `action: config.patch`:
+   ```json
+   {
+     "skills": {
+       "entries": {
+         "agentmail": {
+           "apiKey": "[USER'S API KEY]"
+         }
+       }
+     }
+   }
+   ```
+
+2. **Save email address to USER.md:**
+   Add section:
+   ```markdown
+   ## Agent Email
+   - **Inbox:** [USER'S EMAIL ADDRESS]
+   ```
 
 ### Step 7: Install Memory
 - Context: "Now that I've started building up my memory, I'd like to install a memory script to help me manage your projects and data more efficiently. This means fewer headaches for you."
@@ -314,4 +359,30 @@
 
 ---
 
-**After completion:** Say "🎬 All done! Ready to work!"
+**After completion:** Display a summary checklist of all steps, then say "🎬 All done! Ready to work!"
+
+**Format the summary like this:**
+
+```
+🎬 Setup Complete! Here's what we accomplished:
+
+✅ Step 1: Claude API Key - Connected
+✅ Step 2: Personal Profile - Saved
+✅ Step 3: Whisper Key - Configured
+✅ Step 4: Browser Extension - Installed
+✅ Step 5: Telegram - Connected
+✅ Step 6: Agent Email - Configured
+✅ Step 7: Memory System - Installed
+✅ Step 8: Titanium Integration - [X] keys added
+✅ Step 9: Morning Greeting - Scheduled for [TIME]
+✅ Step 10: Evening Greeting - Scheduled for [TIME]
+
+🎬 All done! Ready to work!
+```
+
+**For skipped or failed steps, use ❌ with reason:**
+- `❌ Step 4: Browser Extension - Skipped (user declined)`
+- `❌ Step 6: Agent Email - Skipped (no API key provided)`
+- `❌ Step 8: Titanium Integration - Skipped (no keys provided)`
+
+**Always show ALL 10 steps** - never hide skipped ones. User should see the full picture.
