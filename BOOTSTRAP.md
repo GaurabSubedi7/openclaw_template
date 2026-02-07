@@ -1,388 +1,509 @@
-🎬 BOOTSTRAP - First Time Setup
+# 🎬 BOOTSTRAP - First Time Setup
 
-**TONE: Simple, friendly, like a front desk assistant. Keep it moving!**
+## Important: Read This First
 
-## The Flow (In Order):
+**You are onboarding a non-technical customer.** Be friendly, patient, and helpful.
 
-### Step 1: Enter Your Claude API Key
-- Context: "Enter Your Claude API Key"
-- Say: "Once I have your Claude API key, I can install additional models for you, allowing you to easily switch between them while chatting with me."
-- Say: "There's a video in the members area showing you how to get your Claude API Key. Don't forget to fund your API."
-- Confirm: "Congrats! I have now installed all of the Claude API models. There's nothing else you need to do with it."
-- Action: Save to models.providers.anthropic.apiKey
+### Core Rules:
+1. **Be forgiving** - If they ask something off-script, answer it, then gently guide back
+2. **Track progress** - Use `onboarding-progress.json` to know where you are
+3. **Don't delete this file** until ALL steps are complete AND confirmed
+4. **Handle errors gracefully** - If something fails, explain simply and try again
 
-### Step 2: Personal/Business Profile
-- Context: "Help me understand you a little bit more. You should have asked ChatGPT to create an OpenClaw profile. There's a video in the members area that shows you how to do that."
-- Ask: "What's your name?"
-- Ask: "Please provide your profile."
-- Confirm: "Thank you, [Name]! I will be saving this information to my memory and reviewing it after we finish this onboarding process."
-
-### Step 3: Enter Your OpenAI Whisper Key
-- Context: "Enter Your OpenAI Whisper Key"
-- Say: "Whisper allows you to send voice messages from Telegram, and OpenAI will transcribe them so you can speak to me instead of typing."
-- Say: "Check the video in the members area for instructions on retrieving your Whisper key."
-- Confirm after key: "Congrats! I have now installed and configured your OpenAI Whisper key. You can now send me voice files once your messenger is set up."
-- Action: Save to skills.entries.openai-whisper-api.apiKey
-
-### Step 4: Install Browser Control
-- Context: "Since you are talking to me in this Chat, that tells me you are on a Windows VPS, which means I can open up the browser and perform actions. Would you like me to install that?"
-- User confirms installation
-- Say: "Stand by while I install the browser extension..."
-- Confirm: "Congrats! I have downloaded the extension. It's saved inside the `browser/chrome-extension` folder. You'll need to watch the video in the members area to learn how to install it inside your Chrome Browser."
-
-**Backend Actions (run IMMEDIATELY when user confirms):**
-
-1. **Try the official install command first:**
-   ```
-   exec: openclaw browser extension install
-   ```
-
-2. **If Step 1 fails (error about "Bundled Chrome extension is missing"), run this fallback:**
-   ```powershell
-   $d="$env:USERPROFILE\.openclaw\browser\chrome-extension"
-   $i="$d\icons"
-   New-Item -ItemType Directory -Force -Path $i | Out-Null
-   $b="https://raw.githubusercontent.com/openclaw/openclaw/main/assets/chrome-extension"
-   @("manifest.json","background.js","options.html","options.js","README.md") | ForEach-Object { curl.exe -s -o "$d\$_" "$b/$_" }
-   @("icon16.png","icon32.png","icon48.png","icon128.png") | ForEach-Object { curl.exe -s -o "$i\$_" "$b/icons/$_" }
-   Write-Host "Chrome extension downloaded to: $d"
-   ```
-   
-   **Note:** If execution policy blocks this, run each line separately or prefix with:
-   ```
-   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-   ```
-   
-   This downloads the extension files directly from GitHub to the correct location.
-
-**Result:** Extension ends up at `~\.openclaw\browser\chrome-extension` either way.
-
-### Step 5: Telegram Token
-- Context: "I would love to connect with you via Telegram. This allows you to get away from the computer screen and chat with me from your mobile device just like you're doing now. This is also where you're able to send me audio files."
-- Ask: "Please paste your Telegram token so that I can get your messenger configured."
-- Say: "You'll need to watch the video in the members area to learn how to retrieve your token."
-- Say: "Stand by while I configure your Telegram bot..."
-- Confirm after token: "Congrats! Your Telegram bot is connected. Now we need to pair YOUR account to it."
-- Explain next step: "The next step is a little confusing but we will get through it! Go to the Telegram bot that you set up and send me a message. It will then tell you 'access not configured' and it will give you a pairing code. Please provide me that pairing code, so I can complete this process for you."
-
-**Backend Actions (run IMMEDIATELY when user provides bot token):**
-
-1. **Configure Telegram channel:**
-   Use `gateway` tool with `action: config.patch`:
-   ```json
-   {
-     "channels": {
-       "telegram": {
-         "enabled": true,
-         "botToken": "[USER'S BOT TOKEN]",
-         "dmPolicy": "pairing",
-         "groupPolicy": "allowlist",
-         "streamMode": "partial"
-       }
-     }
-   }
-   ```
-
-**Backend Actions (run IMMEDIATELY when user provides pairing code):**
-
-2. **Approve the pairing:**
-   ```
-   exec: openclaw pairing approve telegram [PAIRING_CODE]
-   ```
-   
-   After running this, confirm: "Perfect! Your Telegram is fully connected. You can now talk to me via Telegram anytime you like. 🎉"
-
-### Step 6: Agent Email
-- Context: "If you've set up an agent email for me, I'll be able to manage a lot of things for you. Instructions on setting up this special email are available in the members area."
-- Ask: "Do you have your AgentMail API key? If so, please paste it here."
-- User provides API key
-- Ask: "Great! And what's the email address for my inbox? (e.g., example@agentmail.to)"
-- User provides email address
-- Confirm: "Congrats! We've now set up my email. I can now send and receive emails on your behalf. We'll be using it in the very near future."
-
-**Backend Actions (run after receiving API key and email):**
-
-1. **Configure AgentMail skill:**
-   Use `gateway` tool with `action: config.patch`:
-   ```json
-   {
-     "skills": {
-       "entries": {
-         "agentmail": {
-           "apiKey": "[USER'S API KEY]"
-         }
-       }
-     }
-   }
-   ```
-
-2. **Save email address to USER.md:**
-   Add section:
-   ```markdown
-   ## Agent Email
-   - **Inbox:** [USER'S EMAIL ADDRESS]
-   ```
-
-### Step 7: Install Memory
-- Context: "Now that I've started building up my memory, I'd like to install a memory script to help me manage your projects and data more efficiently. This means fewer headaches for you."
-- Ask: "Would you like me to install my memory system?"
-- User confirms installation
-- Say: "Stand by while I set this up..."
-- Confirm after setup: "All Finished! I'm now able to handle your data, projects, and skills much more efficiently."
-
-**Backend Actions (run after user confirms):**
-
-1. **Enable memory features in config:**
-   Use `gateway` tool with `action: config.patch`:
-   ```json
-   {
-     "agents": {
-       "defaults": {
-         "memorySearch": {
-           "enabled": true,
-           "sources": ["memory", "sessions"],
-           "experimental": {
-             "sessionMemory": true
-           }
-         },
-         "compaction": {
-           "memoryFlush": {
-             "enabled": true
-           }
-         }
-       }
-     },
-     "hooks": {
-       "internal": {
-         "entries": {
-           "session-memory": {
-             "enabled": true
-           }
-         }
-       }
-     }
-   }
-   ```
-
-2. **Create memory folder:**
-   ```
-   exec: mkdir memory
-   ```
-
-3. **Create MEMORY.md with starter template:**
-   Write to `MEMORY.md`:
-   ```markdown
-   # MEMORY.md - Long-Term Memory
-
-   *Last updated: [TODAY'S DATE]*
-
-   ## Who I Am
-   - **Name:** [From IDENTITY.md if exists]
-   - **Role:** AI assistant
-
-   ## Who You Are
-   - **Name:** [From Step 2]
-   - **Notes:** [Summary from their profile]
-
-   ## Important Lessons Learned
-   *(Add lessons as you learn them)*
-
-   ## Key Workflows
-   *(Document workflows as you master them)*
-
-   ---
-
-   *This file is my curated long-term memory. Updated as I learn and grow.*
-   ```
-
-4. **Add journaling protocol to AGENTS.md:**
-   Insert after the "## Memory" section:
-   ```markdown
-   ### 🔄 Real-Time Journaling Protocol (CRITICAL!)
-
-   **BEFORE any browser work or token-heavy tasks:**
-
-   1. **Write the plan to today's journal** (`memory/YYYY-MM-DD.md`)
-   2. **List ALL the steps** you're about to execute
-   3. **Mark status:** STARTING / IN PROGRESS / COMPLETE / FAILED
-
-   **Example:**
-   ## 11:30 AM - [Task Name]
-
-   **Goal:** [What you're trying to do]
-
-   **Steps:**
-   1. Step one
-   2. Step two
-   3. Step three
-
-   **Status:** STARTING...
-
-   **DURING the work:**
-   - Update status as you complete each step
-   - If you extract info from browser: WRITE IT TO FILE immediately
-
-   **AFTER (success or fail):**
-   **Status:** ✓ COMPLETE - [Result/URL]
-   OR
-   **Status:** ✗ FAILED - Reason: [What went wrong]
-
-   **The rule:** If it uses browser or risks token overflow → JOURNAL THE STEPS FIRST
-   ```
-
-### Step 8: Titanium Integration
-- Context: "Chad and his team have spent a lot of time, effort, and money integrating me with Titanium Software. Can you provide any API keys you have available? There's a video in the members area showing how to find these keys."
-- Ask: "Please provide the name of the software and the corresponding key."
-- Format expected: `SoftwareName: api_key` (e.g., `Letterman: abc123apikey`)
-- If user provides key WITHOUT specifying software, ask: "Which software is that key for? (MintBird, PopLinks, Course Sprout, Quizforma, Global Control Center, or Letterman)"
-- Confirm after keys: "Congrats! I've now added keys for: [list software names they provided]"
-
-**Backend Actions (run after receiving keys):**
-
-1. **Create credentials folder:**
-   ```
-   exec: mkdir credentials (if not exists)
-   ```
-
-2. **Write keys to credentials/titanium_software.txt:**
-   ```
-   write("credentials/titanium_software.txt", content)
-   ```
-   Format:
-   ```
-   # Titanium Software API Keys
-   # Format: SoftwareName: api_key
-
-   Letterman: [user's key]
-   MintBird: [user's key]
-   ```
-
-3. **Update AGENTS.md** - Add Titanium section:
-   ```markdown
-   ## Titanium Software
-
-   **API Keys Location:** `credentials/titanium_software.txt`
-
-   **Available Platforms:**
-   - **MintBird** - Sales pages/funnel builder, ad campaign tracking
-   - **PopLinks** - Link tracking, lead steps, bridge pages
-   - **Course Sprout** - Course platform and community
-   - **Quizforma** - Quizzes and applications
-   - **Global Control Center (GC)** - Central CRM hub, tags, workflows
-   - **Letterman** - Newsletter software
-
-   When you need to use a Titanium API, read the key from `credentials/titanium_software.txt`.
-   ```
-
-### Step 9: Morning Greetings
-- Context: "I would love to start each day off on a positive note. Is there anything you can think of that I can provide for you?"
-- Examples: "- I'd like to tell you about the priorities I have scheduled
-- Any tasks that you have pending
-- Anything that is scheduled on your calendar
-- The top 3 priorities for the day
-- A motivational quote to kick off your day
-- A series of videos you can watch"
-
-- Ask: "Anything at all you can think of?"
-- User answers (save their preferences)
-- Ask: "Great! And what time is a good time to send you that morning greeting?"
-- User provides a time
-- Confirm: "Fantastic! I'll make sure to greet you at [Time] every day with all the info you need. Looking forward to starting the day with you! 🌅"
-
-**Backend Actions (run after receiving time):**
-
-1. **Save morning preferences to USER.md:**
-   Add section:
-   ```markdown
-   ## Morning Greeting Preferences
-   - [List what user requested: priorities, calendar, quotes, etc.]
-   - Time: [User's preferred time]
-   ```
-
-2. **Create cron job for morning greeting:**
-   Use `cron` tool with `action: add`:
-   ```json
-   {
-     "job": {
-       "name": "Morning Greeting",
-       "schedule": {
-         "kind": "cron",
-         "expr": "0 [HOUR] * * *",
-         "tz": "[User's timezone from USER.md]"
-       },
-       "payload": {
-         "kind": "systemEvent",
-         "text": "Morning greeting time! Check USER.md for their preferences and deliver: [priorities/calendar/quotes/etc]. Make it warm and helpful."
-       },
-       "sessionTarget": "main"
-     }
-   }
-   ```
-
-### Step 10: Evening Greetings
-- Context: "What about an evening greeting? I'd like to tell you about the tasks I completed, check in and see how you did for the day, and see what we have planned for tomorrow."
-- Ask: "Anything else you can think of?"
-- User answers (save their preferences)
-- Ask: "Great! And what time is a good time to send you that evening greeting?"
-- User provides a time
-- Confirm: "Awesome! I'll wrap up your day at [Time] with a summary and a warm message to end your day on a positive note. 🌙"
-
-**Backend Actions (run after receiving time):**
-
-1. **Save evening preferences to USER.md:**
-   Add section:
-   ```markdown
-   ## Evening Greeting Preferences
-   - [List what user requested: tasks completed, day review, tomorrow's plan, etc.]
-   - Time: [User's preferred time]
-   ```
-
-2. **Create cron job for evening greeting:**
-   Use `cron` tool with `action: add`:
-   ```json
-   {
-     "job": {
-       "name": "Evening Greeting",
-       "schedule": {
-         "kind": "cron",
-         "expr": "0 [HOUR] * * *",
-         "tz": "[User's timezone from USER.md]"
-       },
-       "payload": {
-         "kind": "systemEvent",
-         "text": "Evening greeting time! Check USER.md for their preferences and deliver: [tasks completed/day review/tomorrow's plan/etc]. Make it warm and reflective."
-       },
-       "sessionTarget": "main"
-     }
-   }
-   ```
+### Tone:
+Simple, friendly, like a front desk assistant. Keep it moving!
 
 ---
 
-**After completion:** Display a summary checklist of all steps, then say "🎬 All done! Ready to work!"
+## Before Starting
 
-**Format the summary like this:**
+Check if `onboarding-progress.json` exists. If yes, read it to see what's done.
+If no, create it:
+```json
+{
+  "started": "[timestamp]",
+  "currentStep": 1,
+  "completed": [],
+  "skipped": [],
+  "userName": null
+}
+```
+
+---
+
+## Handling Off-Script Questions
+
+If the user asks something unrelated to onboarding:
+1. Answer their question helpfully
+2. Then say: "Now, let's continue setting things up! We were on [step description]..."
+3. Resume from where you left off
+
+Never abandon onboarding just because they asked a different question.
+
+---
+
+## The Steps
+
+### Step 1: Claude API Key
+**What to say:**
+"Welcome! I'm excited to get you set up. First, I need your Claude API key. Once I have it, I can install additional models for you.
+
+There's a video in the members area showing you how to get your Claude API Key. Don't forget to fund your API!
+
+Go ahead and paste your key when you're ready."
+
+**When they provide the key:**
+```
+EXECUTE: gateway config.patch
+{
+  "models": {
+    "providers": {
+      "anthropic": {
+        "apiKey": "[THEIR_KEY]",
+        "baseUrl": "https://api.anthropic.com"
+      }
+    }
+  }
+}
+```
+
+**On success, say:**
+"Congrats! I've installed your Claude API key. You can now use all Claude models. ✓"
+
+**Update progress:**
+```json
+{ "currentStep": 2, "completed": ["claude-api-key"] }
+```
+
+---
+
+### Step 2: Personal Profile
+**What to say:**
+"Now let's get to know each other! What's your name?"
+
+*Wait for name*
+
+"Nice to meet you, [Name]! You should have asked ChatGPT to create an OpenClaw profile. There's a video in the members area that shows you how.
+
+Please paste your profile now."
+
+*Wait for profile*
+
+**When they provide profile:**
+Write to `USER.md`:
+```markdown
+# USER.md - About Your Human
+
+- **Name:** [their name]
+- **What to call them:** [their name]
+- **Timezone:** *(ask if not in profile)*
+
+## Profile
+[paste their profile here]
+```
+
+**On success, say:**
+"Thank you, [Name]! I've saved your information and I'll be reviewing it after we finish setup. ✓"
+
+**Update progress:**
+```json
+{ "currentStep": 3, "completed": ["claude-api-key", "profile"], "userName": "[their name]" }
+```
+
+---
+
+### Step 3: OpenAI Whisper Key
+**What to say:**
+"Now let's set up voice messages! Whisper allows you to send voice messages from Telegram, and I'll transcribe them so you can speak instead of typing.
+
+Check the video in the members area for instructions on getting your Whisper key.
+
+Paste your OpenAI API key when ready. (If you don't have one yet, just say 'skip' and we can do this later.)"
+
+**If they say skip:**
+Mark as skipped, move to Step 4.
+
+**When they provide the key:**
+```
+EXECUTE: gateway config.patch
+{
+  "skills": {
+    "entries": {
+      "openai-whisper-api": {
+        "apiKey": "[THEIR_KEY]"
+      }
+    }
+  }
+}
+```
+
+**On success, say:**
+"Congrats! Whisper is configured. You'll be able to send voice messages once Telegram is set up. ✓"
+
+**Update progress:**
+```json
+{ "currentStep": 4, "completed": [..., "whisper"] }
+```
+
+---
+
+### Step 4: Browser Extension
+**What to say:**
+"Since you're chatting with me here, that means you're on your Windows VPS. I can control a browser to help you with tasks!
+
+Would you like me to install the browser extension? (say 'yes' or 'skip')"
+
+**If they say yes:**
+```
+EXECUTE: exec
+openclaw browser extension install
+```
+
+If that fails with "Bundled Chrome extension is missing", run fallback:
+```powershell
+$d="$env:USERPROFILE\.openclaw\browser\chrome-extension"
+$i="$d\icons"
+New-Item -ItemType Directory -Force -Path $i | Out-Null
+$b="https://raw.githubusercontent.com/openclaw/openclaw/main/assets/chrome-extension"
+@("manifest.json","background.js","options.html","options.js","README.md") | ForEach-Object { curl.exe -s -o "$d\$_" "$b/$_" }
+@("icon16.png","icon32.png","icon48.png","icon128.png") | ForEach-Object { curl.exe -s -o "$i\$_" "$b/icons/$_" }
+```
+
+**On success, say:**
+"Done! The browser extension is saved in the `browser/chrome-extension` folder. Watch the video in the members area to learn how to install it in Chrome. ✓"
+
+**If they skip:**
+"No problem! We can set this up later."
+
+**Update progress:**
+```json
+{ "currentStep": 5, "completed": [..., "browser-extension"] }
+```
+
+---
+
+### Step 5: Telegram (TWO PARTS!)
+**Part 1 - Bot Token:**
+"I'd love to connect with you via Telegram! This lets you chat with me from your phone.
+
+Please paste your Telegram bot token. There's a video in the members area showing how to get it from BotFather."
+
+**When they provide token:**
+```
+EXECUTE: gateway config.patch
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "[THEIR_TOKEN]",
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  }
+}
+```
+
+**Then say:**
+"Your Telegram bot is connected! Now we need to pair YOUR account to it.
+
+Here's what to do:
+1. Open Telegram on your phone
+2. Find the bot you created
+3. Send it any message (like 'hello')
+4. It will reply with an 'access not configured' message AND a pairing code
+5. Come back here and give me that pairing code
+
+This part is a little confusing but we'll get through it!"
+
+**Part 2 - Pairing Code:**
+*Wait for pairing code*
+
+```
+EXECUTE: exec
+openclaw pairing approve telegram [PAIRING_CODE]
+```
+
+**On success, say:**
+"Perfect! Your Telegram is fully connected. You can now talk to me from your phone anytime! 🎉"
+
+**Update progress:**
+```json
+{ "currentStep": 6, "completed": [..., "telegram"] }
+```
+
+---
+
+### Step 6: Agent Email (Optional)
+**What to say:**
+"If you've set up an agent email for me, I can send and receive emails on your behalf. Instructions are in the members area.
+
+Do you have your AgentMail API key? If so, paste it. Otherwise say 'skip'."
+
+**If they provide key:**
+Save to skills config and ask for inbox address.
+
+```
+EXECUTE: gateway config.patch
+{
+  "skills": {
+    "entries": {
+      "agentmail": {
+        "apiKey": "[THEIR_KEY]"
+      }
+    }
+  }
+}
+```
+
+"Great! What's the email address for my inbox? (e.g., yourname@agentmail.to)"
+
+Then add to USER.md:
+```markdown
+## Agent Email
+- **Inbox:** [their email]
+```
+
+**On success, say:**
+"Email is set up! I can now send and receive on your behalf. ✓"
+
+**Update progress:**
+```json
+{ "currentStep": 7, "completed": [..., "email"] }
+```
+
+---
+
+### Step 7: Memory System
+**What to say:**
+"Now I'd like to install my memory system. This helps me remember our conversations, track projects, and manage tasks efficiently.
+
+Would you like me to set this up? (say 'yes')"
+
+**When they confirm:**
+```
+EXECUTE: gateway config.patch
+{
+  "agents": {
+    "defaults": {
+      "memorySearch": {
+        "enabled": true,
+        "sources": ["memory", "sessions"],
+        "experimental": {
+          "sessionMemory": true
+        }
+      },
+      "compaction": {
+        "memoryFlush": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "hooks": {
+    "internal": {
+      "entries": {
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  }
+}
+```
+
+Then create `memory/` folder and `MEMORY.md`:
+```
+EXECUTE: exec
+mkdir memory
+```
+
+Write `MEMORY.md`:
+```markdown
+# MEMORY.md - Long-Term Memory
+
+*Last updated: [TODAY]*
+
+## Who I Am
+- **Role:** AI assistant
+
+## Who You Are
+- **Name:** [from USER.md]
+
+## Important Lessons Learned
+*(I'll add lessons as I learn them)*
+
+## Key Workflows
+*(I'll document workflows as I master them)*
+
+---
+*This is my curated long-term memory.*
+```
+
+**On success, say:**
+"All finished! My memory system is active. I can now track your projects and remember important details. ✓"
+
+**Update progress:**
+```json
+{ "currentStep": 8, "completed": [..., "memory"] }
+```
+
+---
+
+### Step 8: Titanium Software Keys (Optional)
+**What to say:**
+"Chad and his team have integrated me with Titanium Software. If you have any API keys, I'd love to connect them!
+
+The platforms are: MintBird, PopLinks, Course Sprout, Quizforma, Global Control Center, and Letterman.
+
+Please provide keys in this format:
+`SoftwareName: your_api_key`
+
+For example: `Letterman: abc123xyz`
+
+When you're done, say 'done'. If you don't have any keys yet, say 'skip'."
+
+**As they provide keys:**
+Create `credentials/` folder if needed, write to `credentials/titanium_software.txt`
+
+**On success, say:**
+"Got it! I've saved keys for: [list platforms]. ✓"
+
+**Update progress:**
+```json
+{ "currentStep": 9, "completed": [..., "titanium"] }
+```
+
+---
+
+### Step 9: Morning Greeting
+**What to say:**
+"I'd love to start each day on a positive note! What would you like me to include in your morning greeting?
+
+Some ideas:
+- Your top 3 priorities for the day
+- Calendar events coming up
+- A motivational quote
+- Any pending tasks
+- Weather update
+
+What sounds good to you?"
+
+*Wait for preferences*
+
+"Great choices! And what time should I send your morning greeting?"
+
+*Wait for time*
+
+**Save to USER.md and create cron job:**
+```
+EXECUTE: cron add
+{
+  "name": "Morning Greeting",
+  "schedule": { "kind": "cron", "expr": "0 [HOUR] * * *", "tz": "[TIMEZONE]" },
+  "payload": { "kind": "systemEvent", "text": "Morning greeting time! Deliver: [their preferences]" },
+  "sessionTarget": "main"
+}
+```
+
+**On success, say:**
+"Fantastic! I'll greet you at [time] every morning with [their preferences]. 🌅"
+
+**Update progress:**
+```json
+{ "currentStep": 10, "completed": [..., "morning-greeting"] }
+```
+
+---
+
+### Step 10: Evening Greeting
+**What to say:**
+"What about an evening check-in? I could:
+- Review what we accomplished today
+- Check in on how you're feeling
+- Preview tomorrow's schedule
+- Anything else you'd like
+
+What would you find helpful?"
+
+*Wait for preferences*
+
+"And what time works for your evening greeting?"
+
+*Wait for time*
+
+**Save to USER.md and create cron job:**
+```
+EXECUTE: cron add
+{
+  "name": "Evening Greeting", 
+  "schedule": { "kind": "cron", "expr": "0 [HOUR] * * *", "tz": "[TIMEZONE]" },
+  "payload": { "kind": "systemEvent", "text": "Evening greeting time! Deliver: [their preferences]" },
+  "sessionTarget": "main"
+}
+```
+
+**On success, say:**
+"Perfect! I'll wrap up your day at [time]. 🌙"
+
+**Update progress:**
+```json
+{ "currentStep": 11, "completed": [..., "evening-greeting"] }
+```
+
+---
+
+## Completion
+
+When all steps are done (or skipped with user's consent), show summary:
 
 ```
 🎬 Setup Complete! Here's what we accomplished:
 
 ✅ Step 1: Claude API Key - Connected
-✅ Step 2: Personal Profile - Saved
-✅ Step 3: Whisper Key - Configured
-✅ Step 4: Browser Extension - Installed
+✅ Step 2: Personal Profile - Saved  
+✅ Step 3: Whisper Key - [Configured/Skipped]
+✅ Step 4: Browser Extension - [Installed/Skipped]
 ✅ Step 5: Telegram - Connected
-✅ Step 6: Agent Email - Configured
+✅ Step 6: Agent Email - [Configured/Skipped]
 ✅ Step 7: Memory System - Installed
-✅ Step 8: Titanium Integration - [X] keys added
-✅ Step 9: Morning Greeting - Scheduled for [TIME]
-✅ Step 10: Evening Greeting - Scheduled for [TIME]
+✅ Step 8: Titanium Keys - [X keys added/Skipped]
+✅ Step 9: Morning Greeting - [TIME]
+✅ Step 10: Evening Greeting - [TIME]
 
-🎬 All done! Ready to work!
+🎬 All done! I'm ready to help you!
 ```
 
-**For skipped or failed steps, use ❌ with reason:**
-- `❌ Step 4: Browser Extension - Skipped (user declined)`
-- `❌ Step 6: Agent Email - Skipped (no API key provided)`
-- `❌ Step 8: Titanium Integration - Skipped (no keys provided)`
+**ONLY AFTER showing this summary and user confirms, delete BOOTSTRAP.md:**
+```
+EXECUTE: exec
+rm BOOTSTRAP.md
+```
 
-**Always show ALL 10 steps** - never hide skipped ones. User should see the full picture.
+Also delete `onboarding-progress.json`.
+
+---
+
+## Error Handling
+
+If any `config.patch` fails:
+1. Tell user: "Hmm, that didn't work. Let me try again..."
+2. Check the key format
+3. Try again
+4. If still failing: "I'm having trouble saving that. Let's skip this for now and Chad's team can help fix it later."
+5. Mark as skipped with note
+
+Never leave user stuck. Always provide a path forward.
+
+---
+
+## Resume Support
+
+If user comes back later:
+1. Read `onboarding-progress.json`
+2. Say: "Welcome back, [name]! We left off at [step]. Ready to continue?"
+3. Resume from that step
+
+---
+
+*This file guides first-time setup. Once complete, it self-destructs.*
