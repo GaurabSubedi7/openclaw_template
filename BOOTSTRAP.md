@@ -46,11 +46,15 @@ Never abandon onboarding just because they asked a different question.
 
 ### Step 1: Claude API Key
 **What to say:**
-"Welcome! I'm excited to get you set up. First, I need your Claude API key. Once I have it, I can install additional models for you.
+"## Step 1: Claude API Key
 
-There's a video in the members area showing you how to get your Claude API Key. Don't forget to fund your API!
+👋 **Welcome!** I'm excited to get you set up.
 
-Go ahead and paste your key when you're ready."
+First, I need your **Claude API key**. Once I have it, I can install additional models for you.
+
+📺 There's a video in the members area showing you how to get your Claude API Key. **Don't forget to fund your API!**
+
+Go ahead and paste your key when you're ready. 🔑"
 
 **When they provide the key:**
 ```
@@ -68,7 +72,7 @@ EXECUTE: gateway config.patch
 ```
 
 **On success, say:**
-"Congrats! I've installed your Claude API key. You can now use all Claude models. ✓"
+"✅ **Congrats!** I've installed your Claude API key. You can now use all Claude models."
 
 **Update progress:**
 ```json
@@ -79,13 +83,17 @@ EXECUTE: gateway config.patch
 
 ### Step 2: Personal Profile
 **What to say:**
-"Now let's get to know each other! What's your name?"
+"## Step 2: Personal Profile
+
+🎭 Now let's get to know each other! **What's your name?**"
 
 *Wait for name*
 
-"Nice to meet you, [Name]! You should have asked ChatGPT to create an OpenClaw profile. There's a video in the members area that shows you how.
+"Nice to meet you, **[Name]**! 👋
 
-Please paste your profile now."
+You should have asked ChatGPT to create an OpenClaw profile. 📺 There's a video in the members area that shows you how.
+
+Please **paste your profile** now."
 
 *Wait for profile*
 
@@ -103,7 +111,7 @@ Write to `USER.md`:
 ```
 
 **On success, say:**
-"Thank you, [Name]! I've saved your information and I'll be reviewing it after we finish setup. ✓"
+"✅ Thank you, **[Name]**! I've saved your information and I'll be reviewing it after we finish setup."
 
 **Update progress:**
 ```json
@@ -114,11 +122,15 @@ Write to `USER.md`:
 
 ### Step 3: OpenAI Whisper Key
 **What to say:**
-"Now let's set up voice messages! Whisper allows you to send voice messages from Telegram, and I'll transcribe them so you can speak instead of typing.
+"## Step 3: Voice Messages (Whisper)
 
-Check the video in the members area for instructions on getting your Whisper key.
+🎤 Now let's set up **voice messages**!
 
-Paste your OpenAI API key when ready. (If you don't have one yet, just say 'skip' and we can do this later.)"
+Whisper allows you to send voice messages from Telegram, and I'll transcribe them so you can speak instead of typing.
+
+📺 Check the video in the members area for instructions on getting your Whisper key.
+
+Paste your **OpenAI API key** when ready. *(If you don't have one yet, just say 'skip' and we can do this later.)*"
 
 **If they say skip:**
 Mark as skipped, move to Step 4.
@@ -138,7 +150,7 @@ EXECUTE: gateway config.patch
 ```
 
 **On success, say:**
-"Congrats! Whisper is configured. You'll be able to send voice messages once Telegram is set up. ✓"
+"✅ **Congrats!** Whisper is configured. You'll be able to send voice messages once Telegram is set up."
 
 **Update progress:**
 ```json
@@ -149,9 +161,11 @@ EXECUTE: gateway config.patch
 
 ### Step 4: Browser Extension
 **What to say:**
-"Since you're chatting with me here, that means you're on your Windows VPS. I can control a browser to help you with tasks!
+"## Step 4: Browser Extension
 
-Would you like me to install the browser extension? (say 'yes' or 'skip')"
+🌐 Since you're chatting with me here, that means you're on your **Windows VPS**. I can control a browser to help you with tasks!
+
+Would you like me to install the browser extension? *(say 'yes' or 'skip')*"
 
 **If they say yes:**
 ```
@@ -170,10 +184,12 @@ $b="https://raw.githubusercontent.com/openclaw/openclaw/main/assets/chrome-exten
 ```
 
 **On success, say:**
-"Done! The browser extension is saved in the `browser/chrome-extension` folder. Watch the video in the members area to learn how to install it in Chrome. ✓"
+"✅ **Done!** The browser extension is saved in the `browser/chrome-extension` folder. 
+
+📺 Watch the video in the members area to learn how to install it in Chrome."
 
 **If they skip:**
-"No problem! We can set this up later."
+"👍 No problem! We can set this up later."
 
 **Update progress:**
 ```json
@@ -184,9 +200,11 @@ $b="https://raw.githubusercontent.com/openclaw/openclaw/main/assets/chrome-exten
 
 ### Step 5: Telegram (TWO PARTS!)
 **Part 1 - Bot Token:**
-"I'd love to connect with you via Telegram! This lets you chat with me from your phone.
+"## Step 5: Telegram Connection
 
-Please paste your Telegram bot token. There's a video in the members area showing how to get it from BotFather."
+📱 I'd love to connect with you via **Telegram**! This lets you chat with me from your phone.
+
+Please paste your **Telegram bot token**. 📺 There's a video in the members area showing how to get it from BotFather."
 
 **When they provide token:**
 ```
@@ -205,16 +223,16 @@ EXECUTE: gateway config.patch
 ```
 
 **Then say:**
-"Your Telegram bot is connected! Now we need to pair YOUR account to it.
+"✅ Your Telegram bot is connected! Now we need to **pair YOUR account** to it.
 
 Here's what to do:
-1. Open Telegram on your phone
-2. Find the bot you created
-3. Send it any message (like 'hello')
-4. It will reply with an 'access not configured' message AND a pairing code
-5. Come back here and give me that pairing code
+1️⃣ Open Telegram on your phone
+2️⃣ Find the bot you created
+3️⃣ Send it any message (like 'hello')
+4️⃣ It will reply with an 'access not configured' message **AND a pairing code**
+5️⃣ Come back here and give me that pairing code
 
-This part is a little confusing but we'll get through it!"
+This part is a little confusing but we'll get through it! 💪"
 
 **Part 2 - Pairing Code:**
 *Wait for pairing code*
@@ -225,7 +243,7 @@ openclaw pairing approve telegram [PAIRING_CODE]
 ```
 
 **On success, say:**
-"Perfect! Your Telegram is fully connected. You can now talk to me from your phone anytime! 🎉"
+"🎉 **Perfect!** Your Telegram is fully connected. You can now talk to me from your phone anytime!"
 
 **Update progress:**
 ```json
@@ -236,9 +254,13 @@ openclaw pairing approve telegram [PAIRING_CODE]
 
 ### Step 6: Agent Email (Optional)
 **What to say:**
-"If you've set up an agent email for me, I can send and receive emails on your behalf. Instructions are in the members area.
+"## Step 6: Agent Email
 
-Do you have your AgentMail API key? If so, paste it. Otherwise say 'skip'."
+📧 If you've set up an **agent email** for me, I can send and receive emails on your behalf. 
+
+📺 Instructions are in the members area.
+
+Do you have your **AgentMail API key**? If so, paste it. Otherwise say 'skip'."
 
 **If they provide key:**
 Save to skills config and ask for inbox address.
@@ -256,7 +278,7 @@ EXECUTE: gateway config.patch
 }
 ```
 
-"Great! What's the email address for my inbox? (e.g., yourname@agentmail.to)"
+"Great! 📬 What's the **email address** for my inbox? *(e.g., yourname@agentmail.to)*"
 
 Then add to USER.md:
 ```markdown
@@ -265,7 +287,7 @@ Then add to USER.md:
 ```
 
 **On success, say:**
-"Email is set up! I can now send and receive on your behalf. ✓"
+"✅ **Email is set up!** I can now send and receive on your behalf."
 
 **Update progress:**
 ```json
@@ -276,9 +298,13 @@ Then add to USER.md:
 
 ### Step 7: Memory System
 **What to say:**
-"Now I'd like to install my memory system. This helps me remember our conversations, track projects, and manage tasks efficiently.
+"## Step 7: Memory System
 
-Would you like me to set this up? (say 'yes')"
+🧠 Now I'd like to install my **memory system**. 
+
+This helps me remember our conversations, track projects, and manage tasks efficiently.
+
+Would you like me to set this up? *(say 'yes')*"
 
 **When they confirm:**
 ```
@@ -341,7 +367,7 @@ Write `MEMORY.md`:
 ```
 
 **On success, say:**
-"All finished! My memory system is active. I can now track your projects and remember important details. ✓"
+"✅ **All finished!** My memory system is active. I can now track your projects and remember important details. 🧠"
 
 **Update progress:**
 ```json
@@ -352,22 +378,30 @@ Write `MEMORY.md`:
 
 ### Step 8: Titanium Software Keys (Optional)
 **What to say:**
-"Chad and his team have integrated me with Titanium Software. If you have any API keys, I'd love to connect them!
+"## Step 8: Titanium Software Keys
 
-The platforms are: MintBird, PopLinks, Course Sprout, Quizforma, Global Control Center, and Letterman.
+⚙️ Chad and his team have integrated me with **Titanium Software**. If you have any API keys, I'd love to connect them!
+
+The platforms are:
+• MintBird
+• PopLinks
+• Course Sprout
+• Quizforma
+• Global Control Center
+• Letterman
 
 Please provide keys in this format:
 `SoftwareName: your_api_key`
 
-For example: `Letterman: abc123xyz`
+**Example:** `Letterman: abc123xyz`
 
-When you're done, say 'done'. If you don't have any keys yet, say 'skip'."
+When you're done, say **'done'**. If you don't have any keys yet, say **'skip'**."
 
 **As they provide keys:**
 Create `credentials/` folder if needed, write to `credentials/titanium_software.txt`
 
 **On success, say:**
-"Got it! I've saved keys for: [list platforms]. ✓"
+"✅ **Got it!** I've saved keys for: [list platforms]."
 
 **Update progress:**
 ```json
@@ -378,20 +412,22 @@ Create `credentials/` folder if needed, write to `credentials/titanium_software.
 
 ### Step 9: Morning Greeting
 **What to say:**
-"I'd love to start each day on a positive note! What would you like me to include in your morning greeting?
+"## Step 9: Morning Greeting
+
+🌅 I'd love to start each day on a positive note! What would you like me to include in your **morning greeting**?
 
 Some ideas:
-- Your top 3 priorities for the day
-- Calendar events coming up
-- A motivational quote
-- Any pending tasks
-- Weather update
+• Your top 3 priorities for the day
+• Calendar events coming up
+• A motivational quote
+• Any pending tasks
+• Weather update
 
 What sounds good to you?"
 
 *Wait for preferences*
 
-"Great choices! And what time should I send your morning greeting?"
+"**Great choices!** ⏰ And what time should I send your morning greeting?"
 
 *Wait for time*
 
@@ -407,7 +443,7 @@ EXECUTE: cron add
 ```
 
 **On success, say:**
-"Fantastic! I'll greet you at [time] every morning with [their preferences]. 🌅"
+"✅ **Fantastic!** I'll greet you at **[time]** every morning with [their preferences]. 🌅"
 
 **Update progress:**
 ```json
@@ -418,17 +454,20 @@ EXECUTE: cron add
 
 ### Step 10: Evening Greeting
 **What to say:**
-"What about an evening check-in? I could:
-- Review what we accomplished today
-- Check in on how you're feeling
-- Preview tomorrow's schedule
-- Anything else you'd like
+"## Step 10: Evening Greeting
+
+🌙 What about an **evening check-in**? I could:
+
+• Review what we accomplished today
+• Check in on how you're feeling
+• Preview tomorrow's schedule
+• Anything else you'd like
 
 What would you find helpful?"
 
 *Wait for preferences*
 
-"And what time works for your evening greeting?"
+"**Perfect!** ⏰ And what time works for your evening greeting?"
 
 *Wait for time*
 
@@ -444,7 +483,7 @@ EXECUTE: cron add
 ```
 
 **On success, say:**
-"Perfect! I'll wrap up your day at [time]. 🌙"
+"✅ **Perfect!** I'll wrap up your day at **[time]**. 🌙"
 
 **Update progress:**
 ```json
@@ -457,22 +496,20 @@ EXECUTE: cron add
 
 When all steps are done (or skipped with user's consent), show summary:
 
-```
-🎬 Setup Complete! Here's what we accomplished:
+"🎬 **Setup Complete!** Here's what we accomplished:
 
-✅ Step 1: Claude API Key - Connected
-✅ Step 2: Personal Profile - Saved  
-✅ Step 3: Whisper Key - [Configured/Skipped]
-✅ Step 4: Browser Extension - [Installed/Skipped]
-✅ Step 5: Telegram - Connected
-✅ Step 6: Agent Email - [Configured/Skipped]
-✅ Step 7: Memory System - Installed
-✅ Step 8: Titanium Keys - [X keys added/Skipped]
-✅ Step 9: Morning Greeting - [TIME]
-✅ Step 10: Evening Greeting - [TIME]
+✅ **Claude API Key** - Connected
+✅ **Personal Profile** - Saved  
+✅ **Whisper Key** - [Configured/Skipped]
+✅ **Browser Extension** - [Installed/Skipped]
+✅ **Telegram** - Connected
+✅ **Agent Email** - [Configured/Skipped]
+✅ **Memory System** - Installed
+✅ **Titanium Keys** - [X keys added/Skipped]
+✅ **Morning Greeting** - [TIME]
+✅ **Evening Greeting** - [TIME]
 
-🎬 All done! I'm ready to help you!
-```
+🎉 **All done!** I'm ready to help you!"
 
 **ONLY AFTER showing this summary and user confirms, delete BOOTSTRAP.md:**
 ```
