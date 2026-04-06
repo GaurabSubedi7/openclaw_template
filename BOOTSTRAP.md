@@ -133,7 +133,7 @@ Whisper allows you to send voice messages from Telegram, and I'll transcribe the
 Paste your **OpenAI API key** when ready. *(If you don't have one yet, just say 'skip' and we can do this later.)*"
 
 **If they say skip:**
-Mark as skipped, move to Step 4.
+Mark as skipped, move to next step.
 
 **When they provide the key:**
 ```
@@ -159,48 +159,9 @@ EXECUTE: gateway config.patch
 
 ---
 
-### Step 4: Browser Extension
-**What to say:**
-"## Step 4: Browser Extension
-
-🌐 Since you're chatting with me here, that means you're on your **Windows VPS**. I can control a browser to help you with tasks!
-
-Would you like me to install the browser extension? *(say 'yes' or 'skip')*"
-
-**If they say yes:**
-```
-EXECUTE: exec
-openclaw browser extension install
-```
-
-If that fails with "Bundled Chrome extension is missing", run fallback:
-```powershell
-$d="$env:USERPROFILE\.openclaw\browser\chrome-extension"
-$i="$d\icons"
-New-Item -ItemType Directory -Force -Path $i | Out-Null
-$b="https://raw.githubusercontent.com/openclaw/openclaw/main/assets/chrome-extension"
-@("manifest.json","background.js","options.html","options.js","README.md") | ForEach-Object { curl.exe -s -o "$d\$_" "$b/$_" }
-@("icon16.png","icon32.png","icon48.png","icon128.png") | ForEach-Object { curl.exe -s -o "$i\$_" "$b/icons/$_" }
-```
-
-**On success, say:**
-"✅ **Done!** The browser extension is saved in the `browser/chrome-extension` folder. 
-
-📺 Watch the video in the members area to learn how to install it in Chrome."
-
-**If they skip:**
-"👍 No problem! We can set this up later."
-
-**Update progress:**
-```json
-{ "currentStep": 5, "completed": [..., "browser-extension"] }
-```
-
----
-
-### Step 5: Telegram (TWO PARTS!)
+### Step 4: Telegram (TWO PARTS!)
 **Part 1 - Bot Token:**
-"## Step 5: Telegram Connection
+"## Step 4: Telegram Connection
 
 📱 I'd love to connect with you via **Telegram**! This lets you chat with me from your phone.
 
@@ -247,14 +208,14 @@ openclaw pairing approve telegram [PAIRING_CODE]
 
 **Update progress:**
 ```json
-{ "currentStep": 6, "completed": [..., "telegram"] }
+{ "currentStep": 5, "completed": [..., "telegram"] }
 ```
 
 ---
 
-### Step 6: Agent Email (Optional)
+### Step 5: Agent Email (Optional)
 **What to say:**
-"## Step 6: Agent Email
+"## Step 5: Agent Email
 
 📧 If you've set up an **agent email** for me, I can send and receive emails on your behalf. 
 
@@ -291,14 +252,14 @@ Then add to USER.md:
 
 **Update progress:**
 ```json
-{ "currentStep": 7, "completed": [..., "email"] }
+{ "currentStep": 6, "completed": [..., "email"] }
 ```
 
 ---
 
-### Step 7: Memory System
+### Step 6: Memory System
 **What to say:**
-"## Step 7: Memory System
+"## Step 6: Memory System
 
 🧠 Now I'd like to install my **memory system**. 
 
@@ -371,14 +332,14 @@ Write `MEMORY.md`:
 
 **Update progress:**
 ```json
-{ "currentStep": 8, "completed": [..., "memory"] }
+{ "currentStep": 7, "completed": [..., "memory"] }
 ```
 
 ---
 
-### Step 8: Titanium Software Keys (Optional)
+### Step 7: Titanium Software Keys (Optional)
 **What to say:**
-"## Step 8: Titanium Software Keys
+"## Step 7: Titanium Software Keys
 
 ⚙️ Chad and his team have integrated me with **Titanium Software**. If you have any API keys, I'd love to connect them!
 
@@ -405,14 +366,14 @@ Create `credentials/` folder if needed, write to `credentials/titanium_software.
 
 **Update progress:**
 ```json
-{ "currentStep": 9, "completed": [..., "titanium"] }
+{ "currentStep": 8, "completed": [..., "titanium"] }
 ```
 
 ---
 
-### Step 9: Morning Greeting
+### Step 8: Morning Greeting
 **What to say:**
-"## Step 9: Morning Greeting
+"## Step 8: Morning Greeting
 
 🌅 I'd love to start each day on a positive note! What would you like me to include in your **morning greeting**?
 
@@ -447,14 +408,14 @@ EXECUTE: cron add
 
 **Update progress:**
 ```json
-{ "currentStep": 10, "completed": [..., "morning-greeting"] }
+{ "currentStep": 9, "completed": [..., "morning-greeting"] }
 ```
 
 ---
 
-### Step 10: Evening Greeting
+### Step 9: Evening Greeting
 **What to say:**
-"## Step 10: Evening Greeting
+"## Step 9: Evening Greeting
 
 🌙 What about an **evening check-in**? I could:
 
@@ -487,7 +448,7 @@ EXECUTE: cron add
 
 **Update progress:**
 ```json
-{ "currentStep": 11, "completed": [..., "evening-greeting"] }
+{ "currentStep": 10, "completed": [..., "evening-greeting"] }
 ```
 
 ---
@@ -501,7 +462,6 @@ When all steps are done (or skipped with user's consent), show summary:
 ✅ **Claude API Key** - Connected
 ✅ **Personal Profile** - Saved  
 ✅ **Whisper Key** - [Configured/Skipped]
-✅ **Browser Extension** - [Installed/Skipped]
 ✅ **Telegram** - Connected
 ✅ **Agent Email** - [Configured/Skipped]
 ✅ **Memory System** - Installed
